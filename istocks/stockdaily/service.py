@@ -1,6 +1,6 @@
 import time
 from django.db import IntegrityError
-from stockdaily.models import StockHkList, StockUsList, HkDailyPrices, HkQfqFactor, UsQfqFactor
+from stockdaily.models import StockHkList, StockUsList, HkDailyPrices, HkQfqFactor, UsQfqFactor, UsDailyPrices
 from stockdaily.util import to_ak_hk_code, to_int, to_float, to_date, ak_date_format
 from stockdaily.akreader import read_hk_qfq, read_us_qfq, read_hk_hist, read_us_hist
 
@@ -24,7 +24,7 @@ def retrieve_history_us(start_date, end_date):
     for stock in stocks:
         if stock.ak_code:
             items = read_us_hist(code=stock.ak_code, start_date=start_date, end_date=end_date)
-            save_hk_daily(items=items, stock=stock)
+            save_us_daily(items=items, stock=stock)
             time.sleep(5)
 
 
@@ -70,6 +70,21 @@ def save_hk_daily(items, stock):
     try:
         print("       " + str(len(items)) + "  saved.")
         HkDailyPrices.objects.bulk_create(items)
+        stock.status = status_finished
+    except IntegrityError as err1:
+        print("duplicated key error: ", type(err1).__name__)
+        stock.status = status_update_error
+    except Exception as err:
+        print("An error: ", type(err).__name__)
+        stock.status = status_update_error
+    finally:
+        stock.save()
+
+
+def save_us_daily(items, stock):
+    try:
+        print("       " + str(len(items)) + "  saved.")
+        UsDailyPrices.objects.bulk_create(items)
         stock.status = status_finished
     except IntegrityError as err1:
         print("duplicated key error: ", type(err1).__name__)
