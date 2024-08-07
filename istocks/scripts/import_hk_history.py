@@ -1,6 +1,7 @@
-from stockdaily.service import retrieve_history_hk, read_one_history_hk, \
-    check_duplicate_code_date, save_hk_daily
+import stockdaily.service as s
 
 
 def run():
-    retrieve_history_hk(start_year='2023', end_year='2024')
+    # s.retrieve_history_hk(start_year='2022', end_year='2023')
+    s.prepare_to_update_history()
+    s.retrieve_history_hk(start_year='2020', end_year='2021')

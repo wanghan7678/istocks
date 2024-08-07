@@ -1,6 +1,5 @@
 from django.db import models
 
-
 # Create your models here.
 
 
@@ -82,3 +81,4 @@ class StockHkList(models.Model):
     name = models.CharField(max_length=100)
     hkcs1 = models.CharField(max_length=100)
     indices = models.CharField(max_length=50)
+    status = models.CharField(max_length=100)

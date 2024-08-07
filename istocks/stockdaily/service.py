@@ -5,23 +5,40 @@ from stockdaily.models import StockHkList, StockUsList, HkDailyPrices, HkQfqFact
 from stockdaily.util import to_ak_hk_code, to_int, to_float, to_date, ak_date_format
 from stockdaily.akreader import read_hk_daily, read_hk_qfq_factors
 
+status_to_update_qfq = "to qfq"
+status_to_update_his = "to his"
+status_to_update_daily = "to daily"
+status_finished = "finished"
+status_update_error = "update error"
+
 
 def retrieve_history_hk(start_year, end_year):
-    stock_codes = StockHkList.objects.filter(indices='HSI').values_list('code', flat=True)
-    ak_codes = get_ak_codes(stock_codes)
-    for ak_code in ak_codes:
-        items = read_one_history_hk(ak_code=ak_code, start_year=start_year, end_year=end_year, adjust="")
-        save_hk_daily(items=items)
+    stocks = StockHkList.objects.filter(status=status_to_update_his).all()
+    for stock in stocks:
+        items = read_one_history_hk(ak_code=stock.code, start_year=start_year, end_year=end_year, adjust="")
+        save_hk_daily(items=items, stock=stock)
         time.sleep(5)
 
 
 def retrieve_qfq_hk():
-    stock_codes = StockHkList.objects.filter(indices='HSI').values_list('code', flat=True)
-    ak_codes = get_ak_codes(stock_codes)
-    for ak_code in ak_codes:
-        items = read_hk_qfq(code=ak_code)
+    stocks = StockHkList.objects.filter(status=status_to_update_qfq).all()
+    for stock in stocks:
+        items = read_hk_qfq(code=stock.code)
         save_hk_qfq(items=items)
+        stock.status = status_finished
+        stock.save()
         time.sleep(3)
+
+
+def update_hk_akcodes():
+    for item in StockHkList.objects.all():
+        item.code = to_ak_hk_code(item.code)
+        item.save()
+
+
+def retrieve_qfq_hk_one(ak_code):
+    items = read_hk_qfq(code=ak_code)
+    save_hk_qfq(items=items)
 
 
 def read_hk_qfq(code):
@@ -61,14 +78,19 @@ def get_ak_codes(codes):
     return results
 
 
-def save_hk_daily(items):
+def save_hk_daily(items, stock):
     try:
         print("       " + str(len(items)) + "  saved.")
         HkDailyPrices.objects.bulk_create(items)
+        stock.status = status_finished
     except IntegrityError as err1:
         print("duplicated key error: ", type(err1).__name__)
+        stock.status = status_update_error
     except Exception as err:
         print("An error: ", type(err).__name__)
+        stock.status = status_update_error
+    finally:
+        stock.save()
 
 
 def save_hk_qfq(items):
@@ -98,3 +120,11 @@ def contain_code_date(to_check, items):
         if to_check.code == item.code and to_check.trade_date == item.trade_date:
             return True
     return False
+
+
+def prepare_to_update_history():
+    stocks = StockHkList.objects.all()
+    for st in stocks:
+        st.status = status_to_update_his
+        st.save()
+
