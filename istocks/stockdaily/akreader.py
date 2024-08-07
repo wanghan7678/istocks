@@ -1,5 +1,5 @@
 import akshare as ak
-from stockdaily.models import HkQfqFactor, HkDailyPrices, StockUsList, StockHkList
+from stockdaily.models import HkQfqFactor, HkDailyPrices, StockUsList, StockHkList, UsDailyPrices
 from stockdaily.util import to_float, to_hist_date_str, to_int
 
 
@@ -41,6 +41,24 @@ def read_hk_hist(code, start_date, end_date):
         items.append(item)
     return items
 
+
+def read_us_hist(code, start_date, end_date):
+    print("read stock: " + code + " from " + str(start_date) + " to " + str(end_date))
+    df = ak.stock_us_hist(symbol=code, period='daily', start_date=to_hist_date_str(start_date),
+                          end_date=to_hist_date_str(end_date), adjust='')
+    items = []
+    for i in range(0, len(df)):
+        item = UsDailyPrices()
+        item.trade_date = df.iat[i, 0]
+        item.code = code
+        item.open_price = to_float(df.iat[i, 1])
+        item.close_price = to_float(df.iat[i, 2])
+        item.high_price = to_float(df.iat[i, 3])
+        item.low_price = to_float(df.iat[i, 4])
+        item.volume = to_int(df.iat[i, 5])
+        item.turnover_rate = to_float(df.iat[i, 10])
+        items.append(item)
+    return items
 
 def read_hk_qfq(code):
     print("  read qfq factors from ak sina: " + code)
