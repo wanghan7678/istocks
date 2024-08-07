@@ -1,11 +1,11 @@
 from django.db import models
 
+
 # Create your models here.
 
 
-class StockDailyPrices(models.Model):
+class HkDailyPrices(models.Model):
     code = models.CharField(max_length=100)
-    exchange = models.CharField(max_length=40)
     open_price = models.FloatField()
     close_price = models.FloatField()
     high_price = models.FloatField()
@@ -13,6 +13,45 @@ class StockDailyPrices(models.Model):
     trade_date = models.DateField()
     volume = models.IntegerField()
     fq_type = models.CharField(max_length=40, default="qfq")
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['code', 'trade_date'],
+                name='hk_day_price_code_date'
+            ),
+        ]
+
+
+class HkQfqFactor(models.Model):
+    code = models.CharField(max_length=100)
+    start_date = models.DateField()
+    factor = models.FloatField()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['code', 'start_date'],
+                name='hk_qfq_code_date'
+            ),
+        ]
+
+
+class UsDailyPrices(models.Model):
+    code = models.CharField(max_length=100)
+    open_price = models.FloatField()
+    close_price = models.FloatField()
+    high_price = models.FloatField()
+    low_price = models.FloatField()
+    trade_date = models.DateField()
+    volume = models.IntegerField()
+    fq_type = models.CharField(max_length=40, default="qfq")
+
+
+class UsQfqFactor(models.Model):
+    code = models.CharField(max_length=100)
+    start_date = models.DateField()
+    factor = models.FloatField()
 
 
 class StockUsList(models.Model):
