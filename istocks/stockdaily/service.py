@@ -1,3 +1,5 @@
+from datetime import time
+
 from stockdaily.models import StockHkList, StockUsList, StockDailyPrices
 from stockdaily.util import to_ak_hk_code, to_int, to_float, to_date, ak_date_format
 from stockdaily.akreader import read_hk_daily
@@ -24,6 +26,7 @@ def read_history_hk():
             dailys.append(hk_daily)
         StockDailyPrices.objects.bulk_create(dailys)
         print("    totally " + str(len(dailys)) + "  saved.")
+        time.sleep(5)
 
 
 def get_ak_codes(codes):
