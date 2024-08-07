@@ -92,7 +92,7 @@ DATABASES = {
         'OPTIONS': {
             'sql_mode': 'traditional',
         },
-        'NAME': 'isstocks',
+        'NAME': 'istocks',
         'HOST': '38.242.128.116',
         'PORT': 3306,
         'USER': 'admin1',

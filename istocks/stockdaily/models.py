@@ -11,7 +11,7 @@ class HkDailyPrices(models.Model):
     low_price = models.FloatField()
     trade_date = models.DateField()
     volume = models.IntegerField()
-    fq_type = models.CharField(max_length=40, default="qfq")
+    turnover_rate = models.FloatField()
 
     class Meta:
         constraints = [
@@ -38,12 +38,13 @@ class HkQfqFactor(models.Model):
 
 class UsDailyPrices(models.Model):
     code = models.CharField(max_length=100)
+    trade_date = models.DateField()
     open_price = models.FloatField()
     close_price = models.FloatField()
     high_price = models.FloatField()
     low_price = models.FloatField()
-    trade_date = models.DateField()
     volume = models.IntegerField()
+    turnover_rate = models.FloatField()
 
     class Meta:
         constraints = [
@@ -70,15 +71,18 @@ class UsQfqFactor(models.Model):
 
 class StockUsList(models.Model):
     code = models.CharField(max_length=50)
+    ak_code = models.CharField(max_length=100, null=True)
     name = models.CharField(max_length=100)
     gics1 = models.CharField(max_length=100)
     gics2 = models.CharField(max_length=100)
-    indices = models.CharField(max_length=50)
+    indices = models.CharField(max_length=50, null=True)
+    status = models.CharField(max_length=100, null=True)
 
 
 class StockHkList(models.Model):
     code = models.CharField(max_length=50)
+    ak_code = models.CharField(max_length=100, null=True)
     name = models.CharField(max_length=100)
     hkcs1 = models.CharField(max_length=100)
-    indices = models.CharField(max_length=50)
-    status = models.CharField(max_length=100)
+    indices = models.CharField(max_length=50, null=True)
+    status = models.CharField(max_length=100, null=True)

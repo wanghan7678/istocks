@@ -3,7 +3,7 @@ import time
 from django.db import IntegrityError
 from stockdaily.models import StockHkList, StockUsList, HkDailyPrices, HkQfqFactor
 from stockdaily.util import to_ak_hk_code, to_int, to_float, to_date, ak_date_format
-from stockdaily.akreader import read_hk_daily, read_hk_qfq_factors
+from stockdaily.akreader import read_hk_daily, read_hk_qfq_factors, get_us_spot
 
 status_to_update_qfq = "to qfq"
 status_to_update_his = "to his"
@@ -122,9 +122,29 @@ def contain_code_date(to_check, items):
     return False
 
 
-def prepare_to_update_history():
+def prepare_to_update_history_hk():
     stocks = StockHkList.objects.all()
     for st in stocks:
         st.status = status_to_update_his
         st.save()
+
+
+def prepare_to_update_daily_hk():
+    stocks = StockHkList.objects.all()
+    for st in stocks:
+        st.status = status_to_update_daily
+        st.save()
+
+
+def match_us_akcodes():
+    stocks = StockUsList.objects.all()
+    df = get_us_spot()
+    for i in range(0, len(df)):
+        sym = df.iat[i, 15]
+        sp = sym.split('.')
+        for stock in stocks:
+            if len(sp) > 1 and stock.code == sp[1]:
+                stock.ak_code = sym
+                stock.save()
+                continue
 
