@@ -25,13 +25,13 @@ class HkDailyPrices(models.Model):
 
 class HkQfqFactor(models.Model):
     code = models.CharField(max_length=100)
-    start_date = models.DateField()
+    trade_date = models.DateField()
     factor = models.FloatField()
 
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=['code', 'start_date'],
+                fields=['code', 'trade_date'],
                 name='hk_qfq_code_date'
             ),
         ]
@@ -45,13 +45,28 @@ class UsDailyPrices(models.Model):
     low_price = models.FloatField()
     trade_date = models.DateField()
     volume = models.IntegerField()
-    fq_type = models.CharField(max_length=40, default="qfq")
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['code', 'trade_date'],
+                name='us_day_price_code_date'
+            ),
+        ]
 
 
 class UsQfqFactor(models.Model):
     code = models.CharField(max_length=100)
-    start_date = models.DateField()
+    trade_date = models.DateField()
     factor = models.FloatField()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['code', 'trade_date'],
+                name='us_qfq_code_date'
+            ),
+        ]
 
 
 class StockUsList(models.Model):

@@ -12,10 +12,16 @@ def retrieve_history_hk(start_year, end_year):
     for ak_code in ak_codes:
         items = read_one_history_hk(ak_code=ak_code, start_year=start_year, end_year=end_year, adjust="")
         save_hk_daily(items=items)
-        time.sleep(2)
+        time.sleep(5)
+
+
+def retrieve_qfq_hk():
+    stock_codes = StockHkList.objects.filter(indices='HSI').values_list('code', flat=True)
+    ak_codes = get_ak_codes(stock_codes)
+    for ak_code in ak_codes:
         items = read_hk_qfq(code=ak_code)
-        save_hk_qfq(items= items)
-        time.sleep(4)
+        save_hk_qfq(items=items)
+        time.sleep(3)
 
 
 def read_hk_qfq(code):
@@ -24,14 +30,14 @@ def read_hk_qfq(code):
     items = []
     for i in range(0, len(df)):
         item = HkQfqFactor()
-        item.code = code,
-        item.start_date = df.iat[i, 0]
+        item.code = code
+        item.trade_date = df.iat[i, 0]
         item.factor = to_float(df.iat[i, 1])
         items.append(item)
     return items
 
 
-def read_one_history_hk(ak_code, start_year, end_year, adjust):
+def read_one_history_hk(ak_code, start_year, end_year, adjust=""):
     print("read from ak sina:  " + ak_code)
     df = read_hk_daily(code=ak_code, start_year=start_year, end_year=end_year, adjust=adjust)
     items = []
@@ -73,3 +79,22 @@ def save_hk_qfq(items):
         print("duplicated key error: ", type(err1).__name__)
     except Exception as err:
         print("An error: ", type(err).__name__)
+
+
+def check_duplicate_code_date(items):
+    checked = []
+    duplicated = []
+    for item in items:
+        a = item.code + " " + str(item.trade_date)
+        if contain_code_date(item, items) and a in checked:
+            duplicated.append(a)
+        elif a not in checked:
+            checked.append(a)
+    return duplicated
+
+
+def contain_code_date(to_check, items):
+    for item in items:
+        if to_check.code == item.code and to_check.trade_date == item.trade_date:
+            return True
+    return False
