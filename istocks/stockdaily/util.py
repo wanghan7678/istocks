@@ -2,7 +2,7 @@ from datetime import datetime
 
 default_null_value = 0
 ak_date_format = "yyyy-mm-dd"
-hist_date_format = "yyyymmdd"
+hist_date_format = "%Y%m%d"
 
 
 def to_ak_hk_code(code):
@@ -42,5 +42,5 @@ def to_date(date_str, date_format):
 
 
 def to_hist_date_str(date_date):
-    return datetime.strftime(date_date, hist_date_format)
+    return date_date.strftime(hist_date_format)
 
