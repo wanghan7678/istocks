@@ -24,12 +24,14 @@ def read_hk_spot(ak_code):
 
 
 def read_hk_hist(code, start_date, end_date):
+    print("read stock: " + code + " from " + str(start_date) + " to " + str(end_date))
     df = ak.stock_hk_hist(symbol=code, period='daily', start_date=to_hist_date_str(start_date),
                           end_date=to_hist_date_str(end_date), adjust='')
     items = []
     for i in range(0, len(df)):
         item = HkDailyPrices()
         item.trade_date = df.iat[i, 0]
+        item.code = code
         item.open_price = to_float(df.iat[i, 1])
         item.close_price = to_float(df.iat[i, 2])
         item.high_price = to_float(df.iat[i, 3])
