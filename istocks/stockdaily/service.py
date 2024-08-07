@@ -1,4 +1,4 @@
-from datetime import time
+import time
 
 from django.db import IntegrityError
 from stockdaily.models import StockHkList, StockUsList, HkDailyPrices, HkQfqFactor
@@ -12,7 +12,7 @@ def retrieve_history_hk(start_year, end_year):
     for ak_code in ak_codes:
         items = read_one_history_hk(ak_code=ak_code, start_year=start_year, end_year=end_year, adjust="")
         save_hk_daily(items=items)
-        time.sleep(1)
+        time.sleep(2)
         items = read_hk_qfq(code=ak_code)
         save_hk_qfq(items= items)
         time.sleep(4)
