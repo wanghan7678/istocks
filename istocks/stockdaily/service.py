@@ -14,18 +14,18 @@ status_update_error = "update error"
 def retrieve_history_hk(start_date, end_date):
     stocks = StockHkList.objects.filter(status=status_to_update_his).all()
     for stock in stocks:
-        if stock.ak_code:
-            items = read_hk_hist(code=stock.code, start_date=start_date, end_date=end_date)
-            save_hk_daily(items=items, stock=stock)
-            time.sleep(5)
+        items = read_hk_hist(code=stock.code, start_date=start_date, end_date=end_date)
+        save_hk_daily(items=items, stock=stock)
+        time.sleep(5)
 
 
 def retrieve_history_us(start_date, end_date):
     stocks = StockUsList.objects.filter(status=status_to_update_his).all()
     for stock in stocks:
-        items = read_us_hist(code=stock.ak_code, start_date=start_date, end_date=end_date)
-        save_hk_daily(items=items, stock=stock)
-        time.sleep(5)
+        if stock.ak_code:
+            items = read_us_hist(code=stock.ak_code, start_date=start_date, end_date=end_date)
+            save_hk_daily(items=items, stock=stock)
+            time.sleep(5)
 
 
 def retrieve_qfq_hk():
