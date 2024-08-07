@@ -2,7 +2,7 @@ import time
 from django.db import IntegrityError
 from stockdaily.models import StockHkList, StockUsList, HkDailyPrices, HkQfqFactor, UsQfqFactor
 from stockdaily.util import to_ak_hk_code, to_int, to_float, to_date, ak_date_format
-from stockdaily.akreader import read_hk_qfq, read_us_qfq, read_hk_hist
+from stockdaily.akreader import read_hk_qfq, read_us_qfq, read_hk_hist, read_us_hist
 
 status_to_update_qfq = "to qfq"
 status_to_update_his = "to his"
@@ -23,7 +23,7 @@ def retrieve_history_hk(start_date, end_date):
 def retrieve_history_us(start_date, end_date):
     stocks = StockUsList.objects.filter(status=status_to_update_his).all()
     for stock in stocks:
-        items = r(code=stock.code, start_date=start_date, end_date=end_date)
+        items = read_us_hist(code=stock.code, start_date=start_date, end_date=end_date)
         save_hk_daily(items=items, stock=stock)
         time.sleep(5)
 
