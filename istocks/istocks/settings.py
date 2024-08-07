@@ -37,6 +37,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_extensions',
+    'istocks',
+    'corsheaders',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'stockdaily',
 ]
 
 MIDDLEWARE = [
@@ -48,6 +54,13 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ],
+}
 
 ROOT_URLCONF = 'istocks.urls'
 
@@ -75,8 +88,15 @@ WSGI_APPLICATION = 'istocks.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'OPTIONS': {
+            'sql_mode': 'traditional',
+        },
+        'NAME': 'isstocks',
+        'HOST': '38.242.128.116',
+        'PORT': 3306,
+        'USER': 'admin1',
+        'PASSWORD': 'Abcd!1234'
     }
 }
 
