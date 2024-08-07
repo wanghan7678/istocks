@@ -1,7 +1,7 @@
 import time
 
 from django.db import IntegrityError
-from stockdaily.models import StockHkList, StockUsList, HkDailyPrices, HkQfqFactor
+from stockdaily.models import StockHkList, StockUsList, HkDailyPrices, HkQfqFactor, UsQfqFactor
 from stockdaily.util import to_ak_hk_code, to_int, to_float, to_date, ak_date_format
 from stockdaily.akreader import read_hk_daily, read_hk_qfq_factors, get_us_spot
 
@@ -25,6 +25,16 @@ def retrieve_qfq_hk():
     for stock in stocks:
         items = read_hk_qfq(code=stock.code)
         save_hk_qfq(items=items)
+        stock.status = status_finished
+        stock.save()
+        time.sleep(3)
+
+
+def retrieve_qfq_us():
+    stocks = StockUsList.objects.filter(status=status_to_update_qfq).all()
+    for stock in stocks:
+        items = read_hk_qfq(code=stock.code)
+        save_us_qfq(items=items)
         stock.status = status_finished
         stock.save()
         time.sleep(3)
@@ -103,23 +113,14 @@ def save_hk_qfq(items):
         print("An error: ", type(err).__name__)
 
 
-def check_duplicate_code_date(items):
-    checked = []
-    duplicated = []
-    for item in items:
-        a = item.code + " " + str(item.trade_date)
-        if contain_code_date(item, items) and a in checked:
-            duplicated.append(a)
-        elif a not in checked:
-            checked.append(a)
-    return duplicated
-
-
-def contain_code_date(to_check, items):
-    for item in items:
-        if to_check.code == item.code and to_check.trade_date == item.trade_date:
-            return True
-    return False
+def save_us_qfq(items):
+    try:
+        print("      " + str(len(items)) + "  saved.")
+        UsQfqFactor.objects.bulk_create(items)
+    except IntegrityError as err1:
+        print("duplicated key error: ", type(err1).__name__)
+    except Exception as err:
+        print("An error: ", type(err).__name__)
 
 
 def prepare_to_update_history_hk():
@@ -127,6 +128,20 @@ def prepare_to_update_history_hk():
     for st in stocks:
         st.status = status_to_update_his
         st.save()
+
+
+def prepare_to_update_qfq_hk():
+    stocks = StockHkList.objects.all()
+    for st in stocks:
+        st.status = status_to_update_qfq
+        st.save()
+
+
+def prepare_to_update_qfq_us():
+    stocks = StockUsList.objects.all()
+    for st in stocks:
+        st.status = status_to_update_qfq
+        st.save
 
 
 def prepare_to_update_daily_hk():
@@ -147,4 +162,3 @@ def match_us_akcodes():
                 stock.ak_code = sym
                 stock.save()
                 continue
-
