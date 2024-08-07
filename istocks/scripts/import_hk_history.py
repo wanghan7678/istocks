@@ -1,5 +1,5 @@
-from stockdaily.service import read_history_hk, read_one_history_hk
+from stockdaily.service import retrieve_history_hk
 
 
 def run():
-    read_one_history_hk("00700", "qfq")
+    retrieve_history_hk(start_year='2014', end_year='2024')

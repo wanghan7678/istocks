@@ -16,7 +16,7 @@ def retrieve_history_hk(start_year, end_year):
 
 
 def read_hk_qfq(code):
-    print("read qfq factors from ak sina: " + code)
+    print("  read qfq factors from ak sina: " + code)
     df = read_hk_qfq_factors(code=code)
     items = []
     for i in range(0, len(df)):
@@ -26,7 +26,7 @@ def read_hk_qfq(code):
         item.factor = to_float(df.iat[i, 1])
         items.append(item)
     HkQfqFactor.objects.bulk_create(items)
-    print("    totally " + str(len(items)) + "  saved.")
+    print("      totally " + str(len(items)) + "  saved.")
 
 
 def read_one_history_hk(ak_code, start_year, end_year, adjust):
