@@ -5,12 +5,10 @@ from stockdaily.models import HkDailyPrices, UsDailyPrices, HkQfqFactor, UsQfqFa
 def get_qfq_f(trade_dates, factors):
     f = []
     count = 0
-    nf = factors[0].factor
     for i in range(0, len(trade_dates)):
         while factors[count].trade_date > trade_dates[i]:
-            nf = nf * factors[count].factor
             count = count + 1
-        f.append(nf)
+        f.append(factors[count].factor)
     return f
 
 
@@ -28,11 +26,11 @@ def get_hk_factors(code, start_date, end_date):
     dates, closes = get_hk_dailys(code=code, start_date=start_date, end_date=end_date)
     factors = HkQfqFactor.objects.filter(code=code).order_by('-trade_date').all()
     f = get_qfq_f(trade_dates=dates, factors=factors)
-    return f, closes
+    return f, closes, dates
 
 
 def get_hk_qfq_data(code, start_date, end_date):
-    f, c = get_hk_factors(code=code, start_date=start_date, end_date=end_date)
+    f, c, d = get_hk_factors(code=code, start_date=start_date, end_date=end_date)
     prices = []
     for i in range(0, len(f)):
         prices.append(f[i] * c[i])

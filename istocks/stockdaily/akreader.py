@@ -86,6 +86,6 @@ def read_us_qfq(code):
 
 
 def temp():
-    df = ak.stock_hk_hist(symbol="00005", period='daily', start_date="20240801",
-                          end_date="20240807", adjust='')
-    print(df)
+    df = ak.stock_hk_hist(symbol="00005", period='daily', start_date="20230801",
+                          end_date="20230820", adjust='qfq')
+    return df
