@@ -2,7 +2,7 @@ import time
 from django.db import IntegrityError
 from stockdaily.models import StockHkList, StockUsList, HkDailyPrices, HkQfqFactor, UsQfqFactor, UsDailyPrices
 from stockdaily.util import to_ak_hk_code, to_int, to_float, to_date, ak_date_format
-from stockdaily.akreader import read_hk_qfq, read_us_qfq, read_hk_hist, read_us_hist
+from stockdaily.akreader import read_hk_qfq, read_us_qfq, read_hk_hist, read_us_hist, read_us_spot
 
 status_to_update_qfq = "to qfq"
 status_to_update_his = "to his"
@@ -153,7 +153,7 @@ def prepare_to_update_daily_hk():
 
 def match_us_akcodes():
     stocks = StockUsList.objects.all()
-    df = get_us_spot()
+    df = read_us_spot()
     for i in range(0, len(df)):
         sym = df.iat[i, 15]
         sp = sym.split('.')

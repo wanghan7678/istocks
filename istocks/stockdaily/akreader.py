@@ -16,9 +16,7 @@ def read_us_qfq_factors(code):
     return ak.stock_us_daily(symbol=code, adjust="qfq-factor")
 
 
-def read_hk_spot(ak_code):
-    # df = ak.stock_hk_hist(symbol=ak_code, period='daily', start_date='20230101', end_date='20230201', adjust='')
-    # df = ak.stock_us_hist(symbol='106.TTE', period='daily', start_date='20230101', end_date='20230201', adjust='')
+def read_us_spot():
     df = ak.stock_us_spot_em()
     print(df)
 
@@ -59,6 +57,7 @@ def read_us_hist(code, start_date, end_date):
         item.turnover_rate = to_float(df.iat[i, 10])
         items.append(item)
     return items
+
 
 def read_hk_qfq(code):
     print("  read qfq factors from ak sina: " + code)
