@@ -1,8 +1,9 @@
 import stockdaily.prepare as p
-import stockdaily.akreader as a
+import stockdaily.calculator as ca
 
 
 def run():
-    d = p.get_hk_qfq_data(code="00005", start_date='2023-08-01', end_date='2023-08-20')
-    print(d)
+    d, c = p.get_hk_daily_closes_qfq(code="00005", start_date='2023-08-01', end_date='2024-08-08')
+    ca.get_macd(d, c)
+
 

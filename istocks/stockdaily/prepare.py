@@ -12,7 +12,7 @@ def get_qfq_f(trade_dates, factors):
     return f
 
 
-def get_hk_dailys(code, start_date, end_date):
+def get_hk_daily_closes(code, start_date, end_date):
     items = HkDailyPrices.objects.filter(code=code)\
         .filter(trade_date__gte=start_date)\
         .filter(trade_date__lte=end_date)\
@@ -22,19 +22,11 @@ def get_hk_dailys(code, start_date, end_date):
     return list(dates), list(closes)
 
 
-def get_hk_factors(code, start_date, end_date):
-    dates, closes = get_hk_dailys(code=code, start_date=start_date, end_date=end_date)
+def get_hk_daily_closes_qfq(code, start_date, end_date):
+    dates, closes = get_hk_daily_closes(code=code, start_date=start_date, end_date=end_date)
     factors = HkQfqFactor.objects.filter(code=code).order_by('-trade_date').all()
     f = get_qfq_f(trade_dates=dates, factors=factors)
-    return f, closes, dates
-
-
-def get_hk_qfq_data(code, start_date, end_date):
-    f, c, d = get_hk_factors(code=code, start_date=start_date, end_date=end_date)
     prices = []
     for i in range(0, len(f)):
-        prices.append(f[i] * c[i])
-    return prices
-
-
-
+        prices.append(f[i] * closes[i])
+    return dates, prices
