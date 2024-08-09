@@ -193,12 +193,14 @@ def import_latest_data(stock_type):
     last_date = get_latest_date(stock_type=stock_type)
     date_start = last_date + datetime.timedelta(days=1)
     date_end = now
-    print("      update " + str(date_start) + " to " + str(date_end))
-    update_status_to(stock_type=stock_type, status=status_to_update_daily)
+    print("   update " + str(date_start) + " to " + str(date_end))
+    update_status_to(stock_type=stock_type, status=status_to_update_his)
     try:
         if stock_type == stock_hk:
+            print("    hk:")
             read_save_history_hk(start_date=date_start, end_date=date_end)
         elif stock_type == stock_us:
+            print("    us:")
             read_save_history_us(start_date=date_start, end_date=date_end)
     except IntegrityError as err1:
         print("Integration Error.")
