@@ -1,5 +1,6 @@
 from django.db import models
 
+
 # Create your models here.
 
 
@@ -91,4 +92,36 @@ class StockHkList(models.Model):
 class HkSignal(models.Model):
     code = models.CharField(max_length=50)
     trade_date = models.DateField()
-    signal_type = models.CharField(max_length=40)
+    signal_name = models.CharField(max_length=40)
+    future_high = models.FloatField(null=True)
+    increase_days = models.FloatField(null=True)
+    increase_pct = models.FloatField(null=True)
+    turn_period = models.IntegerField(null=True)
+    status = models.CharField(max_length=40)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['code', 'trade_date', 'signal_name'],
+                name='hk_sig_code_date'
+            ),
+        ]
+
+
+class UsSignal(models.Model):
+    code = models.CharField(max_length=50)
+    trade_date = models.DateField()
+    signal_name = models.CharField(max_length=40)
+    future_high = models.FloatField(null=True)
+    increase_days = models.FloatField(null=True)
+    increase_pct = models.FloatField(null=True)
+    turn_period = models.IntegerField(null=True)
+    status = models.CharField(max_length=40)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['code', 'trade_date', 'signal_name'],
+                name='us_sig_code_date'
+            ),
+        ]

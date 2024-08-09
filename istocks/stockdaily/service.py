@@ -1,6 +1,6 @@
 import time
 from django.db import IntegrityError
-from stockdaily.models import StockHkList, StockUsList, HkDailyPrices, HkQfqFactor, UsQfqFactor, UsDailyPrices
+from stockdaily.models import StockHkList, StockUsList, HkDailyPrices, HkQfqFactor, UsQfqFactor, UsDailyPrices, HkSignal, UsSignal
 from stockdaily.util import to_ak_hk_code, to_int, to_float, to_date, ak_date_format
 from stockdaily.akreader import read_hk_qfq, read_us_qfq, read_hk_hist, read_us_hist, read_us_spot
 import datetime
@@ -8,47 +8,87 @@ import datetime
 status_to_update_qfq = "to qfq"
 status_to_update_his = "to his"
 status_to_update_daily = "to daily"
+status_to_update_signal = "to signal"
 status_finished = "finished"
 status_update_error = "update error"
 
 stock_hk = "hk"
 stock_us = "us"
 
+model_hk_list = 'hk_list'
+model_hk_daily = 'hk_daily'
+model_hk_qfq = 'hk_qfq'
+model_hk_sig = 'hk_sig'
+model_us_list = 'us_list'
+model_us_daily = 'us_daily'
+model_us_qfq = 'us_qfq'
+model_us_sig = 'us_sig'
 
-def retrieve_history_hk(start_date, end_date):
+
+def insert_items(model_name, items, stock):
+    try:
+        print("      " + str(len(items)) + "  saved.")
+        if model_name == model_hk_list:
+            StockHkList.objects.bulk_create(items)
+        elif model_name == model_hk_qfq:
+            HkQfqFactor.objects.bulk_create(items)
+        elif model_name == model_hk_daily:
+            HkDailyPrices.objects.bulk_create(items)
+        elif model_name == model_hk_sig:
+            HkSignal.objects.bult_create(items)
+        elif model_name == model_us_list:
+            StockUsList.objects.bulk_create(items)
+        elif model_name == model_us_qfq:
+            UsQfqFactor.objects.bulk_create(items)
+        elif model_name == model_us_daily:
+            UsDailyPrices.objects.bulk_create(items)
+        elif model_name == model_hk_sig:
+            UsSignal.objects.bulk_create(items)
+        if stock:
+            stock.status = status_finished
+    except IntegrityError as err1:
+        print("duplicated key error: ", type(err1).__name__)
+        if stock:
+            stock.status = status_update_error
+    except Exception as err:
+        print("An error: ", type(err).__name__)
+        if stock:
+            stock.status = status_update_error
+    finally:
+        if stock:
+            stock.save()
+
+
+def read_save_history_hk(start_date, end_date):
     stocks = StockHkList.objects.filter(status=status_to_update_his).all()
     for stock in stocks:
         items = read_hk_hist(code=stock.code, start_date=start_date, end_date=end_date)
-        save_hk_daily(items=items, stock=stock)
+        insert_items(model_name=model_hk_daily, items=items, stock=stock)
         time.sleep(5)
 
 
-def retrieve_history_us(start_date, end_date):
+def read_save_history_us(start_date, end_date):
     stocks = StockUsList.objects.filter(status=status_to_update_his).all()
     for stock in stocks:
         if stock.ak_code:
             items = read_us_hist(code=stock.ak_code, start_date=start_date, end_date=end_date)
-            save_us_daily(items=items, stock=stock)
+            insert_items(model_name=model_us_daily, items=items, stock=stock)
             time.sleep(5)
 
 
-def retrieve_qfq_hk():
+def read_save_qfq_hk():
     stocks = StockHkList.objects.filter(status=status_to_update_qfq).all()
     for stock in stocks:
         items = read_hk_qfq(code=stock.code)
-        save_hk_qfq(items=items)
-        stock.status = status_finished
-        stock.save()
+        insert_items(model_name=model_hk_qfq, items=items, stock=stock)
         time.sleep(3)
 
 
-def retrieve_qfq_us():
+def read_save_qfq_us():
     stocks = StockUsList.objects.filter(status=status_to_update_qfq).all()
     for stock in stocks:
         items = read_us_qfq(code=stock.code)
-        save_us_qfq(items=items)
-        stock.status = status_finished
-        stock.save()
+        insert_items(model_name=model_us_qfq, items=items, stock=stock)
         time.sleep(3)
 
 
@@ -58,9 +98,9 @@ def update_hk_akcodes():
         item.save()
 
 
-def retrieve_qfq_hk_one(ak_code):
+def read_save_qfq_hk_one(ak_code):
     items = read_hk_qfq(code=ak_code)
-    save_hk_qfq(items=items)
+    insert_items(model_name=model_hk_qfq, items=items, stock=None)
 
 
 def get_ak_codes(codes):
@@ -68,91 +108,6 @@ def get_ak_codes(codes):
     for code in codes:
         results.append(to_ak_hk_code(code))
     return results
-
-
-def save_hk_daily(items, stock):
-    try:
-        print("       " + str(len(items)) + "  saved.")
-        HkDailyPrices.objects.bulk_create(items)
-        stock.status = status_finished
-    except IntegrityError as err1:
-        print("duplicated key error: ", type(err1).__name__)
-        stock.status = status_update_error
-    except Exception as err:
-        print("An error: ", type(err).__name__)
-        stock.status = status_update_error
-    finally:
-        stock.save()
-
-
-def save_us_daily(items, stock):
-    try:
-        print("       " + str(len(items)) + "  saved.")
-        UsDailyPrices.objects.bulk_create(items)
-        stock.status = status_finished
-    except IntegrityError as err1:
-        print("duplicated key error: ", type(err1).__name__)
-        stock.status = status_update_error
-    except Exception as err:
-        print("An error: ", type(err).__name__)
-        stock.status = status_update_error
-    finally:
-        stock.save()
-
-
-def save_hk_qfq(items):
-    try:
-        print("      " + str(len(items)) + "  saved.")
-        HkQfqFactor.objects.bulk_create(items)
-    except IntegrityError as err1:
-        print("duplicated key error: ", type(err1).__name__)
-    except Exception as err:
-        print("An error: ", type(err).__name__)
-
-
-def save_us_qfq(items):
-    try:
-        print("      " + str(len(items)) + "  saved.")
-        UsQfqFactor.objects.bulk_create(items)
-    except IntegrityError as err1:
-        print("duplicated key error: ", type(err1).__name__)
-    except Exception as err:
-        print("An error: ", type(err).__name__)
-
-
-def prepare_to_update_history_hk():
-    stocks = StockHkList.objects.all()
-    for st in stocks:
-        st.status = status_to_update_his
-        st.save()
-
-
-def prepare_to_update_history_us():
-    stocks = StockUsList.objects.all()
-    for st in stocks:
-        st.status = status_to_update_his
-        st.save()
-
-
-def prepare_to_update_qfq_hk():
-    stocks = StockHkList.objects.all()
-    for st in stocks:
-        st.status = status_to_update_qfq
-        st.save()
-
-
-def prepare_to_update_qfq_us():
-    stocks = StockUsList.objects.all()
-    for st in stocks:
-        st.status = status_to_update_qfq
-        st.save()
-
-
-def prepare_to_update_daily_hk():
-    stocks = StockHkList.objects.all()
-    for st in stocks:
-        st.status = status_to_update_daily
-        st.save()
 
 
 def match_us_akcodes():
@@ -177,38 +132,20 @@ def get_latest_date(stock_type):
         return item.trade_date
 
 
-def import_latest_data():
+def import_latest_data(stock_type):
     now = datetime.datetime.now().date()
-    print("import hk stocks...")
-    last_date = get_latest_date(stock_type=stock_hk)
+    print("import " + stock_type + " stocks...")
+    last_date = get_latest_date(stock_type=stock_type)
     date_start = last_date + datetime.timedelta(days=1)
     date_end = now
-    prepare_to_update_history_hk()
+    update_status_to(stock_type=stock_type, status=status_to_update_daily)
     try:
-        retrieve_history_hk(start_date=date_start, end_date=date_end)
+        if stock_type == stock_hk:
+            read_save_history_hk(start_date=date_start, end_date=date_end)
+        elif stock_type == stock_us:
+            read_save_history_us(start_date=date_start, end_date=date_end)
     except IntegrityError as err1:
         print("Integration Error.")
-    except Exception as err:
-        print("sleeping....")
-        time.sleep(300)
-        print("try again....")
-        retrieve_history_hk(start_date=date_start, end_date=date_end)
-    print("sleeping......")
-    time.sleep(300)
-    print("import us stocks...")
-    last_date = s.get_latest_date(stock_type=stock_us)
-    date_start = last_date + datetime.timedelta(days=1)
-    date_end = now
-    prepare_to_update_history_us()
-    try:
-        retrieve_history_us(start_date=date_start, end_date=date_end)
-    except IntegrityError as err1:
-        print("Integration Error.")
-    except Exception as err:
-        print("sleeping....")
-        time.sleep(300)
-        print("try again....")
-        retrieve_history_us(start_date=date_start, end_date=date_end)
 
 
 def check_if_all_finished(stock_type):
@@ -218,3 +155,17 @@ def check_if_all_finished(stock_type):
     if stock_type == stock_hk:
         finished = StockHkList.objects.filter(status__contains='to').count()
         return finished == 0
+
+
+def update_status_to(stock_type, status):
+    if stock_type == stock_hk and check_if_all_finished(stock_hk):
+        items = StockHkList.objects.all()
+        for item in items:
+            item.status = status
+            item.save()
+    if stock_type == stock_us and check_if_all_finished(stock_us):
+        items = StockUsList.objects.all()
+        for item in items:
+            item.status = status
+            item.save()
+
