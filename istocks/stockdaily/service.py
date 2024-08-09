@@ -209,3 +209,12 @@ def import_latest_data():
         time.sleep(300)
         print("try again....")
         retrieve_history_us(start_date=date_start, end_date=date_end)
+
+
+def check_if_all_finished(stock_type):
+    if stock_type == stock_us:
+        finished = StockUsList.objects.filter(ak_code__contains='.').filter(status__contains='to').count()
+        return finished == 0
+    if stock_type == stock_hk:
+        finished = StockHkList.objects.filter(status__contains='to').count()
+        return finished == 0
