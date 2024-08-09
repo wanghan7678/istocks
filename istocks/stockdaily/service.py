@@ -3,12 +3,16 @@ from django.db import IntegrityError
 from stockdaily.models import StockHkList, StockUsList, HkDailyPrices, HkQfqFactor, UsQfqFactor, UsDailyPrices
 from stockdaily.util import to_ak_hk_code, to_int, to_float, to_date, ak_date_format
 from stockdaily.akreader import read_hk_qfq, read_us_qfq, read_hk_hist, read_us_hist, read_us_spot
+import datetime
 
 status_to_update_qfq = "to qfq"
 status_to_update_his = "to his"
 status_to_update_daily = "to daily"
 status_finished = "finished"
 status_update_error = "update error"
+
+stock_hk = "hk"
+stock_us = "us"
 
 
 def retrieve_history_hk(start_date, end_date):
@@ -162,3 +166,46 @@ def match_us_akcodes():
                 stock.ak_code = sym
                 stock.save()
                 continue
+
+
+def get_latest_date(stock_type):
+    if stock_type == stock_hk:
+        item = HkDailyPrices.objects.filter(code='00316').latest('trade_date')
+        return item.trade_date
+    if stock_type == stock_us:
+        item = UsDailyPrices.objects.filter(code="106.ZTS").latest('trade_date')
+        return item.trade_date
+
+
+def import_latest_data():
+    now = datetime.datetime.now().date()
+    print("import hk stocks...")
+    last_date = get_latest_date(stock_type=stock_hk)
+    date_start = last_date + datetime.timedelta(days=1)
+    date_end = now
+    prepare_to_update_history_hk()
+    try:
+        retrieve_history_hk(start_date=date_start, end_date=date_end)
+    except IntegrityError as err1:
+        print("Integration Error.")
+    except Exception as err:
+        print("sleeping....")
+        time.sleep(300)
+        print("try again....")
+        retrieve_history_hk(start_date=date_start, end_date=date_end)
+    print("sleeping......")
+    time.sleep(300)
+    print("import us stocks...")
+    last_date = s.get_latest_date(stock_type=stock_us)
+    date_start = last_date + datetime.timedelta(days=1)
+    date_end = now
+    prepare_to_update_history_us()
+    try:
+        retrieve_history_us(start_date=date_start, end_date=date_end)
+    except IntegrityError as err1:
+        print("Integration Error.")
+    except Exception as err:
+        print("sleeping....")
+        time.sleep(300)
+        print("try again....")
+        retrieve_history_us(start_date=date_start, end_date=date_end)
