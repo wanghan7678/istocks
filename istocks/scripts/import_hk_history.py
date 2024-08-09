@@ -10,6 +10,7 @@ def run():
         date_end = datetime.date(2020-i, 12, 31)
         try:
             s.retrieve_history_hk(start_date=date_start, end_date=date_end)
+            time.sleep(300)
         except Exception as err:
             time.sleep(300)
             s.retrieve_history_hk(start_date=date_start, end_date=date_end)
