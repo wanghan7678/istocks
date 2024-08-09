@@ -213,7 +213,7 @@ def import_latest_data():
 
 def check_if_all_finished(stock_type):
     if stock_type == stock_us:
-        finished = StockUsList.objects.filter(ak_code__contains='.').filter(status__contains='to').count()
+        finished = StockUsList.objects.filter(status__contains='to').count()
         return finished == 0
     if stock_type == stock_hk:
         finished = StockHkList.objects.filter(status__contains='to').count()
