@@ -86,3 +86,9 @@ class StockHkList(models.Model):
     hkcs1 = models.CharField(max_length=100)
     indices = models.CharField(max_length=50, null=True)
     status = models.CharField(max_length=100, null=True)
+
+
+class HkSignal(models.Model):
+    code = models.CharField(max_length=50)
+    trade_date = models.DateField()
+    signal_type = models.CharField(max_length=40)

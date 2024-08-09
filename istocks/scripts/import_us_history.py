@@ -1,9 +1,15 @@
 import stockdaily.service as s
 import datetime
+import time
 
 
 def run():
-    s.prepare_to_update_history_us()
-    date_start = datetime.date(2020, 1, 1)
-    date_end = datetime.date(2020, 12, 31)
-    s.retrieve_history_us(start_date=date_start, end_date=date_end)
+    for i in range(1, 5):
+        s.prepare_to_update_history_hk()
+        date_start = datetime.date(2020-i, 1, 1)
+        date_end = datetime.date(2020-i, 12, 31)
+        try:
+            s.retrieve_history_hk(start_date=date_start, end_date=date_end)
+        except Exception as err:
+            time.sleep(300)
+            s.retrieve_history_hk(start_date=date_start, end_date=date_end)
