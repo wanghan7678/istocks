@@ -8,7 +8,7 @@ from django.db import IntegrityError
 def run(*args):
     if len(args) > 1:
         s.prepare_to_update_history_hk()
-        date_start = datetime.datetime.strptime(args[0], "%Y-%m_%d").date()
+        date_start = datetime.datetime.strptime(args[0], "%Y-%m-%d").date()
         date_end = datetime.datetime.strptime().date()
         try:
             s.retrieve_history_hk(start_date=date_start, end_date=date_end)
