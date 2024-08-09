@@ -193,6 +193,7 @@ def import_latest_data(stock_type):
     last_date = get_latest_date(stock_type=stock_type)
     date_start = last_date + datetime.timedelta(days=1)
     date_end = now
+    print("      update " + str(date_start) + " to " + str(date_end))
     update_status_to(stock_type=stock_type, status=status_to_update_daily)
     try:
         if stock_type == stock_hk:
