@@ -27,7 +27,6 @@ def get_macd_golden(code, dates, closes):
     return results
 
 
-
 def check_all_less(list_a, list_b, end_index, period):
     for i in range(1, period):
         if list_a[end_index - i] >= list_b[end_index - i]:

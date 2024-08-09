@@ -59,6 +59,48 @@ def insert_items(model_name, items, stock):
             stock.save()
 
 
+def update_create_items(model_name, items, stock):
+    try:
+        print("      " + str(len(items)) + "  saved.")
+        if model_name == model_hk_list:
+            for item in items:
+                StockHkList.objects.update_or_create(item)
+        elif model_name == model_hk_qfq:
+            for item in items:
+                HkQfqFactor.objects.update_or_create(item)
+        elif model_name == model_hk_daily:
+            for item in items:
+                HkDailyPrices.objects.update_or_create(item)
+        elif model_name == model_hk_sig:
+            for item in items:
+                HkSignal.objects.update_or_create(item)
+        elif model_name == model_us_list:
+            for item in items:
+                StockUsList.objects.update_or_create(item)
+        elif model_name == model_us_qfq:
+            for item in items:
+                UsQfqFactor.objects.update_or_create(item)
+        elif model_name == model_us_daily:
+            for item in items:
+                UsDailyPrices.objects.update_or_create(item)
+        elif model_name == model_hk_sig:
+            for item in items:
+                UsSignal.objects.update_or_create(item)
+        if stock:
+            stock.status = status_finished
+    except IntegrityError as err1:
+        print("duplicated key error: ", type(err1).__name__)
+        if stock:
+            stock.status = status_update_error
+    except Exception as err:
+        print("An error: ", type(err).__name__)
+        if stock:
+            stock.status = status_update_error
+    finally:
+        if stock:
+            stock.save()
+
+
 def read_save_history_hk(start_date, end_date):
     stocks = StockHkList.objects.filter(status=status_to_update_his).all()
     for stock in stocks:
@@ -90,6 +132,19 @@ def read_save_qfq_us():
         items = read_us_qfq(code=stock.code)
         insert_items(model_name=model_us_qfq, items=items, stock=stock)
         time.sleep(3)
+
+
+def read_update_qfq(stock_type):
+    if stock_type == stock_hk:
+        stocks = StockHkList.objects.filter(status=status_to_update_qfq).all()
+        for stock in stocks:
+            items = read_hk_qfq(stock.code)
+            update_create_items(model_name=model_hk_qfq, items=items, stock=stock)
+    elif stock_type == stock_us:
+        stocks = StockUsList.objects.filter(status=status_to_update_qfq).all()
+        for stock in stocks:
+            items = read_us_qfq(stock.code)
+            update_create_items(model_name=model_us_qfq, items=items, stock=stock)
 
 
 def update_hk_akcodes():
