@@ -2,15 +2,22 @@ import time
 import stockdaily.service as s
 import datetime
 
+from django.db import IntegrityError
 
-def run():
-    for i in range(1, 5):
+
+def run(*args):
+    if len(args) > 1:
         s.prepare_to_update_history_hk()
-        date_start = datetime.date(2020-i, 1, 1)
-        date_end = datetime.date(2020-i, 12, 31)
+        date_start = datetime.strptime(args[0], "%Y-%m_%d").date()
+        date_end = datetime.strptime().date()
         try:
             s.retrieve_history_hk(start_date=date_start, end_date=date_end)
-            time.sleep(300)
+        except IntegrityError as err1:
+            print("Integration Error.")
         except Exception as err:
+            print("sleeping....")
             time.sleep(300)
+            print("try again....")
             s.retrieve_history_hk(start_date=date_start, end_date=date_end)
+    else:
+        print("input --script-args <start_date:yyyy-mm-dd> <end_date:yyyy-mm-dd>")
