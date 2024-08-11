@@ -28,11 +28,9 @@ def get_macd_golden(code, dates, closes):
         sig.trade_date = dates[cross_index]
         sig.signal_name = signal_name_macd_golden
         sig.status = signal_status_new
-        print("date: " + str(sig.trade_date))
         if closes[cross_index] == 0:
             continue
         if cross_index + 5 < len(closes):
-            print("   " + str(closes[cross_index + 5]))
             sig.chg_pct_5d = (closes[cross_index + 5] - closes[cross_index]) / closes[cross_index]
         if cross_index + 10 < len(closes):
             sig.chg_pct_10d = (closes[cross_index + 10] - closes[cross_index]) / closes[cross_index]
