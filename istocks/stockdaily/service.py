@@ -35,6 +35,7 @@ def insert_items(model_name, items, stock):
         elif model_name == model_hk_daily:
             HkDailyPrices.objects.bulk_create(items)
         elif model_name == model_hk_sig:
+            print("  insert " + model_name)
             HkSignal.objects.bult_create(items)
         elif model_name == model_us_list:
             StockUsList.objects.bulk_create(items)

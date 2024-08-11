@@ -12,7 +12,7 @@ signal_name_macd_death = 'macd_death'
 signal_status_new = 'new'
 
 
-def get_macd_golden(code, dates, closes):
+def get_macd_hk(code, dates, closes):
     results = []
     goldens = []
     closes.reverse()
