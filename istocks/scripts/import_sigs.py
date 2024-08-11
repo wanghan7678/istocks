@@ -1,4 +1,4 @@
-import signal_service as ss
+import stockdaily.signal_service as ss
 
 
 def run(*args):
