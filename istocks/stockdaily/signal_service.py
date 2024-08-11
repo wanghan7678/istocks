@@ -16,11 +16,10 @@ def cal_save_macd_hk():
 def create_macd_goldens(stock_type, start_date):
     if stock_type == s.stock_hk:
         s.update_status_to(stock_type=s.stock_hk, status=s.status_to_update_signal)
-        cal_update_macd_hk(start_date=start_date)
+        cal_update_macd_hk(start_date=start_date, to_create=True)
     if stock_type == s.stock_us:
         s.update_status_to(stock_type=s.stock_us, status=s.status_to_update_signal)
-        cal_update_macd_hk(start_date=start_date)
-
+        cal_update_macd_hk(start_date=start_date, to_create=True)
 
 
 def cal_update_macd_hk(start_date, to_create):
