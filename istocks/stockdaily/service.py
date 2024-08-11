@@ -42,7 +42,7 @@ def insert_items(model_name, items, stock):
             UsQfqFactor.objects.bulk_create(items)
         elif model_name == model_us_daily:
             UsDailyPrices.objects.bulk_create(items)
-        elif model_name == model_hk_sig:
+        elif model_name == model_us_sig:
             UsSignal.objects.bulk_create(items)
         if stock:
             stock.status = status_finished
