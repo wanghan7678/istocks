@@ -35,7 +35,7 @@ def get_macd_golden(code, dates, closes):
         if cross_index + 10 < len(closes):
             sig.chg_pct_10d = (closes[cross_index + 10] - closes[cross_index]) / closes[cross_index]
         if cross_index + 20 < len(closes):
-            sig.chg_pct_10d = (closes[cross_index + 10] - closes[cross_index]) / closes[cross_index]
+            sig.chg_pct_20d = (closes[cross_index + 10] - closes[cross_index]) / closes[cross_index]
         results.append(sig)
     return results
 

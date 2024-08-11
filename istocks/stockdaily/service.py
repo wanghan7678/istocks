@@ -52,6 +52,7 @@ def insert_items(model_name, items, stock):
             stock.status = status_update_error
     except Exception as err:
         print("An error: ", type(err).__name__)
+        print("    " + str(err))
         if stock:
             stock.status = status_update_error
     finally:
