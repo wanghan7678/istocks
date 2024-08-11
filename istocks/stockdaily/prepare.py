@@ -6,7 +6,7 @@ def get_qfq_f(trade_dates, factors):
     f = []
     count = 0
     for i in range(0, len(trade_dates)):
-        while factors[count].trade_date > trade_dates[i]:
+        while count < len(factors) and factors[count].trade_date > trade_dates[i]:
             count = count + 1
         f.append(factors[count].factor)
     return f
