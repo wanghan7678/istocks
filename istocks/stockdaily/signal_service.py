@@ -31,9 +31,9 @@ def cal_update_macd_hk(start_date, to_create):
         items = ca.get_macd_golden(code=stock.code, dates=dates, closes=prices)
         print("  calculate " + stock.code + " MACD Golden: totally " + str(len(items)) + " saved.")
         if to_create:
-            s.insert_items(model_name=s.model_hk_signal, items=items, stock=stock)
+            s.insert_items(model_name=s.model_hk_sig, items=items, stock=stock)
         else:
-            s.update_items(model_name=s.model_hk_signal, items=items, stock=stock)
+            s.update_items(model_name=s.model_hk_sig, items=items, stock=stock)
 
 
 def cal_update_macd_us(start_date, to_create):
