@@ -28,7 +28,7 @@ def cal_update_macd_hk(start_date, to_create):
     stocks = StockHkList.objects.filter(status=s.status_to_update_signal).all()
     for stock in stocks:
         dates, prices = p.get_hk_daily_closes_qfq(code=stock.code, start_date=start_date, end_date=now_date)
-        items = ca.get_macd(code=stock.code, dates=dates, closes=prices)
+        items = ca.get_macd_golden(code=stock.code, dates=dates, closes=prices)
         print("  calculate " + stock.code + " MACD Golden: totally " + len(items) + " saved.")
         if to_create:
             s.insert_items(model_name=s.model_hk_signal, items=items, stock=stock)
