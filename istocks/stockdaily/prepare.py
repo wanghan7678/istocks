@@ -25,7 +25,7 @@ def get_hk_daily_closes(code, start_date, end_date):
 
 
 def get_us_daily_closes(ak_code, start_date, end_date):
-    items = UsDailyPrices.objects.filter(ak_code=ak_code) \
+    items = UsDailyPrices.objects.filter(code=ak_code) \
         .filter(trade_date__gte=start_date) \
         .filter(trade_date__lte=end_date) \
         .order_by('-trade_date')

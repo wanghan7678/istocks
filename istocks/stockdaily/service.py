@@ -54,6 +54,9 @@ def insert_items(model_name, items, stock):
         print(err)
         if stock:
             stock.status = status_update_error
+    finally:
+        if stock:
+            stock.save()
 
 
 

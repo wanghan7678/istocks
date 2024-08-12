@@ -111,10 +111,9 @@ class UsSignal(models.Model):
     code = models.CharField(max_length=50)
     trade_date = models.DateField()
     signal_name = models.CharField(max_length=40)
-    future_high = models.FloatField(null=True)
-    increase_days = models.FloatField(null=True)
-    increase_pct = models.FloatField(null=True)
-    turn_period = models.IntegerField(null=True)
+    chg_pct_5d = models.FloatField(null=True)
+    chg_pct_10d = models.FloatField(null=True)
+    chg_pct_20d = models.FloatField(null=True)
     status = models.CharField(max_length=40)
 
     class Meta:
