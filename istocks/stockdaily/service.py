@@ -35,10 +35,7 @@ def insert_items(model_name, items, stock):
         elif model_name == model_hk_daily:
             HkDailyPrices.objects.bulk_create(items)
         elif model_name == model_hk_sig:
-            print("  insert " + model_name + ",  type=" + str(type(items)))
-            for i in items:
-                print(i.trade_date)
-            HkSignal.objects.bult_create(items)
+            HkSignal.objects.bulk_create(items)
         elif model_name == model_us_list:
             StockUsList.objects.bulk_create(items)
         elif model_name == model_us_qfq:
@@ -54,13 +51,10 @@ def insert_items(model_name, items, stock):
         if stock:
             stock.status = status_update_error
     except Exception as err:
-        print("An error: ", type(err).__name__)
-        print("    " + str(err))
+        print(err)
         if stock:
             stock.status = status_update_error
-    finally:
-        if stock:
-            stock.save()
+
 
 
 def update_create_items(model_name, items, stock):
