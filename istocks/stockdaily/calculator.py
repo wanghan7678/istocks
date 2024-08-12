@@ -40,7 +40,7 @@ def get_macd_hk(code, dates, closes):
     return results
 
 
-def get_macd_us(code, dates, closes):
+def get_macd_us(ak_code, dates, closes):
     results = []
     goldens = []
     closes.reverse()
@@ -52,7 +52,7 @@ def get_macd_us(code, dates, closes):
     for i in range(0, len(goldens)):
         cross_index = goldens[i]
         sig = UsSignal()
-        sig.code = code
+        sig.code = ak_code
         sig.trade_date = dates[cross_index]
         sig.signal_name = signal_name_macd_golden
         sig.status = signal_status_new
