@@ -41,7 +41,7 @@ def cal_update_macd_us(start_date, to_create):
     s.update_status_to(s.stock_us, s.status_to_update_signal)
     stocks = StockUsList.objects.filter(status=s.status_to_update_signal).all()
     for stock in stocks:
-        dates, prices = p.get_hk_daily_closes_qfq(code=stock.ak_code, start_date=start_date, end_date=now_date)
+        dates, prices = p.get_us_daily_closes_qfq(code=stock.ak_code, start_date=start_date, end_date=now_date)
         items = ca.get_macd_us(code=stock.ak_code, dates=dates, closes=prices)
         print("  calculate " + stock.code + " MACD Golden: totally " + str(len(items)) + " saved.")
         if to_create:

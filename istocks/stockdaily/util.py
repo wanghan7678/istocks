@@ -44,3 +44,10 @@ def to_date(date_str, date_format):
 def to_hist_date_str(date_date):
     return date_date.strftime(hist_date_format)
 
+
+def convert_code_from_ak(ak_code):
+    sp = ak_code.split('.')
+    if len(sp) > 1:
+        return sp[1]
+    return ak_code
+
