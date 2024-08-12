@@ -43,7 +43,7 @@ def cal_update_macd_us(start_date, to_create):
     for stock in stocks:
         dates, prices = p.get_hk_daily_closes_qfq(code=stock.ak_code, start_date=start_date, end_date=now_date)
         items = ca.get_macd_us(code=stock.ak_code, dates=dates, closes=prices)
-        print("  calculate " + stock.code + " MACD Golden: totally " + len(items) + " saved.")
+        print("  calculate " + stock.code + " MACD Golden: totally " + str(len(items)) + " saved.")
         if to_create:
             s.insert_items(model_name=s.model_us_signal, items=items, stock=stock)
         else:
