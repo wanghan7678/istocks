@@ -45,9 +45,9 @@ def cal_update_macd_us(start_date, to_create):
         items = ca.get_macd_us(code=stock.ak_code, dates=dates, closes=prices)
         print("  calculate " + stock.code + " MACD Golden: totally " + str(len(items)) + " saved.")
         if to_create:
-            s.insert_items(model_name=s.model_us_signal, items=items, stock=stock)
+            s.insert_items(model_name=s.model_us_sig, items=items, stock=stock)
         else:
-            s.update_items(model_name=s.model_us_signal, items=items, stock=stock)
+            s.update_items(model_name=s.model_us_sig, items=items, stock=stock)
 
 
 def cal_signal_labels(signal):
